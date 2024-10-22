@@ -56,9 +56,10 @@ def insert_values():
         cursor = connection.cursor()
         cursor.execute(
             """INSERT INTO users (username, password) VALUES 
-                ('user1', '$2y$10$AWjxBjwFBtV9jYGu4u5KoeYXQCkbXOQgEWMHEwjK2fMBfCnRokcGq'), 
-                ('user2', '$2y$10$nKyTtUOStl0Pfc4lNh9jhucwdgl8tcx6ZL23k0x7I4AVK5e/m/G3u'), 
-                ('user3', '$2y$10$DBqVuyJ3b9eufW8Fkuic2eaIJ6FJcboRgcwWHSL2MwJWUnP7O9U36'); """
+                ('user1', '$2y$10$AWjxBjwFBtV9jYGu4u5KoeYXQCkbXOQgEWMHEwjK2fMBfCnRokcGq') -- Password: password123, 
+                ('user2', '$2y$10$nKyTtUOStl0Pfc4lNh9jhucwdgl8tcx6ZL23k0x7I4AVK5e/m/G3u'), -- Password: mypassword
+                ('user3', '$2y$10$DBqVuyJ3b9eufW8Fkuic2eaIJ6FJcboRgcwWHSL2MwJWUnP7O9U36'); -- Password: secretpass
+            """
         )
         cursor.execute("SELECT * FROM users WHERE username='user1'")
         print(cursor.fetchall())
