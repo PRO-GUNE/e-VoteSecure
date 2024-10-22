@@ -1,4 +1,4 @@
-from crypto.helpers import find_large_prime, modular_exponentiation
+from helpers import find_large_prime, modular_exponentiation
 
 
 def blind_vote(m, e, n):

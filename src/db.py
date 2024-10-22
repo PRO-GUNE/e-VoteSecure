@@ -1,32 +1,20 @@
 import pymysql
-import os
-from dotenv import load_dotenv
-
-# load dotenv file
-load_dotenv()
-
-# get environment variables
-DB_HOST = os.getenv("DB_HOST")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_USER = os.getenv("DB_USER")
-DB_DB = os.getenv("DB_DB")
-DB_PORT = os.getenv("DB_PORT")
-DB_CHARSET = os.getenv("DB_CHARSET")
 
 
 def get_db_connection():
     timeout = 10
     connection = pymysql.connect(
-        charset=DB_CHARSET,
+        charset="utf8mb4",
         connect_timeout=timeout,
         cursorclass=pymysql.cursors.DictCursor,
-        db=DB_DB,
-        host=DB_HOST,
-        password=DB_PASSWORD,
+        db="defaultdb",
+        host="mysql-39341dcb-cmggun456-1c5e.g.aivencloud.com",
+        password="AVNS_b9CCV1O_xsp-dKGn1OT",
         read_timeout=timeout,
-        port=DB_PORT,
-        user=DB_USER,
+        port=12530,
+        user="avnadmin",
         write_timeout=timeout,
+        autocommit=True,
     )
 
     return connection
@@ -36,6 +24,7 @@ def get_db_connection():
 def setup_db():
     try:
         connection = get_db_connection()
+        print(connection)
         cursor = connection.cursor()
         cursor.execute("DROP TABLE IF EXISTS users, candidates;")
         cursor.execute(
@@ -65,11 +54,9 @@ def insert_values():
         cursor = connection.cursor()
         cursor.execute(
             """INSERT INTO users (username, password) VALUES 
-                ('user1', '$2b$12$QmF.X7lgTfQdYvSPoI5IuOg0TPPA8SGtQkP.M7zFo92F3hWgI8klG'), 
-                ('user2', '$2b$12$mkfYP2Ok16Fv0Gb5iHXYP.WhIuBFoNxzXKK7V99hvTNOHJGsGJprW'), 
-                ('user3', '$2b$12$0.DzCeZa.VoFbvReD9E5seR4PvvwmktBeqzyTKPDxsDKXO2Y4/JtS'), 
-                ('user4', '$2b$12$yRVCJMgWchD/BVBu5mUw9OyEqm08td.9FQUT/VhcxZ.NVtr2NEaUy'), 
-                ('user5', '$2b$12$aVYrJnl7jU2Y3Hdw10lNi.8J9QmP/g3C/Zge.sFq1kIE/ceP1Hl5y'); """
+                ('user1', '$2y$10$AWjxBjwFBtV9jYGu4u5KoeYXQCkbXOQgEWMHEwjK2fMBfCnRokcGq'), 
+                ('user2', '$2y$10$nKyTtUOStl0Pfc4lNh9jhucwdgl8tcx6ZL23k0x7I4AVK5e/m/G3u'), 
+                ('user3', '$2y$10$DBqVuyJ3b9eufW8Fkuic2eaIJ6FJcboRgcwWHSL2MwJWUnP7O9U36'); """
         )
         cursor.execute("SELECT * FROM users WHERE username='user1'")
         print(cursor.fetchall())
