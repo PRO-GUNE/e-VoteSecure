@@ -64,11 +64,11 @@ def insert_values():
         cursor = connection.cursor()
         cursor.execute(
             """INSERT INTO users (username, password) VALUES 
-                ('user1', '$2b$12$QmF.X7lgTfQdYvSPoI5IuOg0TPPA8SGtQkP.M7zFo92F3hWgI8klG'), -- Password: password123
-                ('user2', '$2b$12$mkfYP2Ok16Fv0Gb5iHXYP.WhIuBFoNxzXKK7V99hvTNOHJGsGJprW'), -- Password: mypassword
-                ('user3', '$2b$12$0.DzCeZa.VoFbvReD9E5seR4PvvwmktBeqzyTKPDxsDKXO2Y4/JtS'), -- Password: secretpass
-                ('user4', '$2b$12$yRVCJMgWchD/BVBu5mUw9OyEqm08td.9FQUT/VhcxZ.NVtr2NEaUy'), -- Password: adminpass
-                ('user5', '$2b$12$aVYrJnl7jU2Y3Hdw10lNi.8J9QmP/g3C/Zge.sFq1kIE/ceP1Hl5y'); -- Password: qwerty123"""
+                ('user1', '$2b$12$QmF.X7lgTfQdYvSPoI5IuOg0TPPA8SGtQkP.M7zFo92F3hWgI8klG'), 
+                ('user2', '$2b$12$mkfYP2Ok16Fv0Gb5iHXYP.WhIuBFoNxzXKK7V99hvTNOHJGsGJprW'), 
+                ('user3', '$2b$12$0.DzCeZa.VoFbvReD9E5seR4PvvwmktBeqzyTKPDxsDKXO2Y4/JtS'), 
+                ('user4', '$2b$12$yRVCJMgWchD/BVBu5mUw9OyEqm08td.9FQUT/VhcxZ.NVtr2NEaUy'), 
+                ('user5', '$2b$12$aVYrJnl7jU2Y3Hdw10lNi.8J9QmP/g3C/Zge.sFq1kIE/ceP1Hl5y'); """
         )
         cursor.execute("SELECT * FROM users WHERE username='user1'")
         print(cursor.fetchall())
