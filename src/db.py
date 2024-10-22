@@ -1,6 +1,8 @@
 import pymysql
+from streamlit import cache_resource
 
 
+@cache_resource
 def get_db_connection():
     timeout = 10
     connection = pymysql.connect(
