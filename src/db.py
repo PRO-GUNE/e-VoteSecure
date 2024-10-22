@@ -9,6 +9,8 @@ load_dotenv()
 DB_HOST = os.getenv("DB_HOST")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_USER = os.getenv("DB_USER")
+DB_DB = os.getenv("DB_DB")
+DB_PORT = os.getenv("DB_PORT")
 
 
 def get_db_connection():
@@ -17,11 +19,11 @@ def get_db_connection():
         charset="utf8mb4",
         connect_timeout=timeout,
         cursorclass=pymysql.cursors.DictCursor,
-        db="defaultdb",
+        db=DB_DB,
         host=DB_HOST,
         password=DB_PASSWORD,
         read_timeout=timeout,
-        port=12530,
+        port=DB_PORT,
         user=DB_USER,
         write_timeout=timeout,
     )
