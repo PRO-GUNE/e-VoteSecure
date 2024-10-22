@@ -1,8 +1,6 @@
 import pymysql
-from streamlit import cache_resource
 
 
-@cache_resource
 def get_db_connection():
     timeout = 10
     connection = pymysql.connect(
@@ -56,7 +54,7 @@ def insert_values():
         cursor = connection.cursor()
         cursor.execute(
             """INSERT INTO users (username, password) VALUES 
-                ('user1', '$2y$10$AWjxBjwFBtV9jYGu4u5KoeYXQCkbXOQgEWMHEwjK2fMBfCnRokcGq') -- Password: password123, 
+                ('user1', '$2y$10$AWjxBjwFBtV9jYGu4u5KoeYXQCkbXOQgEWMHEwjK2fMBfCnRokcGq'), -- Password: password123
                 ('user2', '$2y$10$nKyTtUOStl0Pfc4lNh9jhucwdgl8tcx6ZL23k0x7I4AVK5e/m/G3u'), -- Password: mypassword
                 ('user3', '$2y$10$DBqVuyJ3b9eufW8Fkuic2eaIJ6FJcboRgcwWHSL2MwJWUnP7O9U36'); -- Password: secretpass
             """
