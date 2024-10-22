@@ -17,16 +17,16 @@ DB_CHARSET = os.getenv("DB_CHARSET")
 def get_db_connection():
     timeout = 10
     connection = pymysql.connect(
-        # charset=DB_CHARSET,
-        # connect_timeout=timeout,
-        # cursorclass=pymysql.cursors.DictCursor,
-        # db=DB_DB,
-        # host=DB_HOST,
-        # password=DB_PASSWORD,
-        # read_timeout=timeout,
-        # port=DB_PORT,
-        # user=DB_USER,
-        # write_timeout=timeout,
+        charset=DB_CHARSET,
+        connect_timeout=timeout,
+        cursorclass=pymysql.cursors.DictCursor,
+        db=DB_DB,
+        host=DB_HOST,
+        password=DB_PASSWORD,
+        read_timeout=timeout,
+        port=DB_PORT,
+        user=DB_USER,
+        write_timeout=timeout,
     )
 
     return connection
