@@ -1,4 +1,14 @@
 import pymysql
+import os
+from dotenv import load_dotenv
+
+# load dotenv file
+load_dotenv()
+
+# get environment variables
+DB_HOST = os.getenv("DB_HOST")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_USER = os.getenv("DB_USER")
 
 
 def get_db_connection():
@@ -8,11 +18,11 @@ def get_db_connection():
         connect_timeout=timeout,
         cursorclass=pymysql.cursors.DictCursor,
         db="defaultdb",
-        host="mysql-39341dcb-cmggun456-1c5e.g.aivencloud.com",
-        password="AVNS_b9CCV1O_xsp-dKGn1OT",
+        host=DB_HOST,
+        password=DB_PASSWORD,
         read_timeout=timeout,
         port=12530,
-        user="avnadmin",
+        user=DB_USER,
         write_timeout=timeout,
     )
 
