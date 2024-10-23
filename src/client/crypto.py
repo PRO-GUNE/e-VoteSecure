@@ -28,15 +28,3 @@ def unblind_signature(s, k):
     s2 = (s * extended_gcd(k, n)[1]) % n
     print("Unblinded signature:", s2)
     return s2
-
-
-def decode_vote(s, k):
-    # Unblind the message
-    m2 = (s * extended_gcd(k, n)[1]) % n
-    print("Unblinded message:", m2)
-
-    # Decrypt the unblinded message
-    m = modular_exponentiation(m2, e, n)
-    print("Decrypted signature:", m)
-
-    return m
