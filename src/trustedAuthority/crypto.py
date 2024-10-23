@@ -19,15 +19,21 @@ d = extended_gcd(e, phi_n)[1] % phi_n
 # Public key: (e, n)
 public_key = (e, n)
 
-print("------------ Prime Numbers ------------")
-print("p:", p)
-print("q:", q)
-print("---------------------------------------")
-print("Prime composite (n)                  :", n)
-print("Euler totient function of n (phi_n)  :", phi_n)
-print("---------------------------------------")
-print("Secret key (d)                       :", d)
-print(f"Public key (e,n)                     : {e}, {n}")
+
+# Encrypt the message
+def encrypt_message(m):
+    # Encrypting the message
+    c = modular_exponentiation(m, e, n)
+    print("Encrypted message:", c)
+    return c
+
+
+# Decrypt the message
+def decrypt_message(c):
+    # Decrypting the message
+    m = modular_exponentiation(c, d, n)
+    print("Decrypted message:", m)
+    return m
 
 
 def blind_sign(m1):

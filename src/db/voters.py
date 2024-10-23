@@ -5,8 +5,19 @@ def get_user_from_db(username, connection):
     return user
 
 
+def get_user_from_id_from_db(userid, connection):
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE id=%s", (userid,))
+    user = cursor.fetchone()
+    return user
+
+
 def set_user_in_db(username, password, connection):
-    pass
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO users (username, password) VALUES (%s, %s)", (username, password)
+    )
+    connection.commit()
 
 
 def set_voted_in_db(username, connection):
