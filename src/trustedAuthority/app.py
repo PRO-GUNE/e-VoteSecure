@@ -8,7 +8,6 @@ from flask import request, jsonify
 connection = get_db_connection()
 
 vote_count = 0
-nonce = "nonce"
 
 
 @app.route("/public_key", methods=["GET"])
@@ -38,25 +37,18 @@ def sign():
     vote_count += 1
 
     # Create receipt for the user
-    receipt_m = hash(str(user["id"]) + nonce)
-    receipt = crypto.encrypt_message(receipt_m)
-
-    print(receipt, user["id"], nonce)
+    receipt = crypto.encrypt_receipt(user["id"])
     return jsonify({"signed_vote": s1, "receipt": receipt})
 
 
 @app.route("/verify", methods=["POST"])
 def verify():
     data = request.json
-    user_id = data["user_id"]
-    receipt = crypto.decrypt_message(data["receipt"])
-
-    hashed_calc = hash(str(user_id) + nonce)
-    print(user_id, receipt, hashed_calc)
+    user_id = crypto.decrypt_receipt(data["receipt"])
 
     # Check if the user is authorized to vote
     user = get_user_from_id_from_db(user_id, connection)
-    if not user or receipt != hashed_calc:
+    if not user:
         return jsonify({"message": "Vote not recognized"}), 404
 
     return jsonify({"message": "Vote verified successfully"})

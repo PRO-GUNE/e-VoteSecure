@@ -68,6 +68,7 @@ def register():
         if st.button("Verify OTP"):
             if int(entered_otp) == st.session_state.otp:
                 register_new_user(username, password, st.session_state.connection)
+                st.rerun()
             else:
                 st.error("Invalid OTP")
 
@@ -113,7 +114,7 @@ def vote():
         if response.status_code == 200:
             try:
                 signed_vote = response.json()["signed_vote"]
-                add_to_vote_pool(signed_vote,st.session_state.connection)
+                add_to_vote_pool(signed_vote, st.session_state.connection)
                 receipt = response.json()["receipt"]
             except ValueError:
                 print("Error decoding JSON response")
@@ -171,7 +172,7 @@ def get_vote_count():
 
 
 # Streamlit app layout
-st.title("User Authentication App")
+st.title("e-VoteSecure Voting Platform")
 
 # Get the vote count from the trusted authority
 if "vote_count" not in st.session_state:
@@ -180,6 +181,7 @@ st.header(f"Vote Count: {st.session_state.vote_count}")
 
 menu = ["Login", "Register"]
 choice = st.sidebar.selectbox("Menu", menu)
+refrest = st.sidebar.button("Refresh")
 
 if not st.session_state.loggedInUser:
     if choice == "Login":
@@ -187,10 +189,9 @@ if not st.session_state.loggedInUser:
     else:
         register()
 else:
-    logout()
-
-if st.session_state.loggedInUser:
     if not st.session_state.voted:
         vote()
     else:
         verify_vote()
+
+    logout()

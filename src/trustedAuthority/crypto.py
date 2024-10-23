@@ -1,4 +1,9 @@
 from utils.helpers import find_large_prime, modular_exponentiation, gcd, extended_gcd
+import os
+from dotenv import load_dotenv
+
+# Load env variables
+load_dotenv()
 
 # Generate two large prime numbers p and q
 p = find_large_prime(32)
@@ -19,19 +24,27 @@ d = extended_gcd(e, phi_n)[1] % phi_n
 # Public key: (e, n)
 public_key = (e, n)
 
+# Get the encrypting public and private keys
+ENCRYPT_E = int(os.getenv("ENCRYPT_E"))
+ENCRYPT_N = int(os.getenv("ENCRYPT_N"))
+ENCRYPT_D = int(os.getenv("ENCRYPT_D"))
+NONCE = int(os.getenv("NONCE"))
 
-# Encrypt the message
-def encrypt_message(m):
+
+# Create receipt for verification
+def encrypt_receipt(m):
+    m1 = int(m) + NONCE % ENCRYPT_N
     # Encrypting the message
-    c = modular_exponentiation(m, e, n)
+    c = modular_exponentiation(m1, ENCRYPT_E, ENCRYPT_N)
     print("Encrypted message:", c)
     return c
 
 
 # Decrypt the message
-def decrypt_message(c):
+def decrypt_receipt(c):
     # Decrypting the message
-    m = modular_exponentiation(c, d, n)
+    m1 = modular_exponentiation(int(c), ENCRYPT_D, ENCRYPT_N)
+    m = m1 - NONCE % ENCRYPT_N
     print("Decrypted message:", m)
     return m
 
