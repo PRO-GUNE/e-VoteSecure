@@ -45,6 +45,12 @@ def setup_db():
                     vote_count INT DEFAULT 0                 -- Vote count, starting at 0
                 );"""
         )
+        cursor.execute(
+            """CREATE TABLE VotePool (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                signedvote TEXT NOT NULL
+            );"""
+        )
     finally:
         connection.close()
 
@@ -74,8 +80,45 @@ def insert_values():
         )
         cursor.execute("SELECT * FROM candidates")
         print(cursor.fetchall())
+
     finally:
         connection.close()
+
+def add_to_vote_pool(signed_vote):
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Store the signed vote as a string since it can be a large integer
+        query = "INSERT INTO vote_pool (signed_vote) VALUES (%s)"
+        cursor.execute(query, (str(signed_vote),))  
+        
+        connection.commit()
+
+    finally:
+        connection.close()
+
+# Drop all tables
+def drop_all_tables():
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Query to drop all tables in the database
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")  # Disable foreign key checks temporarily
+        cursor.execute("SHOW TABLES;")
+        tables = cursor.fetchall()
+
+        # Drop each table one by one
+        for table in tables:
+            table_name = list(table.values())[0]  # Extract the table name from the result
+            cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
+
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")  # Enable foreign key checks back
+        connection.commit()
+    finally:
+        connection.close()
+
 
 
 if __name__ == "__main__":

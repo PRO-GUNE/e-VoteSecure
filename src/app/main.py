@@ -5,7 +5,7 @@ from users import (
     get_candidate_from_db_by_id,
     set_voted_in_db,
 )
-from db import get_db_connection
+from db import get_db_connection,add_to_vote_pool
 from helpers import find_large_prime
 from vote import blind_vote, blind_sign, decode_vote
 
@@ -66,6 +66,7 @@ def vote():
         # Sign the blinded vote -- Done by a trusted authority
         s1 = blind_sign(m1)
         st.signed_vote = s1
+        add_to_vote_pool(s1)
 
         st.session_state.voted = True
         st.success(f"Voted for {candidate}")
