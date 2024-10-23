@@ -30,3 +30,7 @@ def authenticate_user(username, password, connection):
         print(f"Error: {e}")
         st.error(e)
         return None
+
+
+def register_user(username, password, connection):
+    pass

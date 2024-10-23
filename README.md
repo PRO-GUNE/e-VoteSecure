@@ -10,7 +10,7 @@ pip install streamlit
 
 - Run the Trusted Authority server using the following command from the src directory
 ```bash
-export FLASK_APP=trusted_authority/app.py
+export FLASK_APP=trustedAuthority/app.py
 python -m flask run
 ```
 
@@ -25,3 +25,4 @@ python -m streamlit run client/app.py
 - [ ] Identify vulnerabilities and fix them
 - [ ] Identify performance bottlenecks and fix them
 - [ ] Remove Debug errors and warnings
+- [ ] Add receipt

@@ -5,6 +5,10 @@ def get_user_from_db(username, connection):
     return user
 
 
+def set_user_in_db(username, password, connection):
+    pass
+
+
 def set_voted_in_db(username, connection):
     cursor = connection.cursor()
     cursor.execute("UPDATE users SET voted=1 WHERE username=%s", (username,))

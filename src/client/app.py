@@ -5,7 +5,7 @@ from db.candidates import (
     get_candidates_from_db,
     get_candidate_from_db_by_id,
 )
-from client.users import authenticate_user
+from client.users import authenticate_user, register_user
 from utils.helpers import find_large_prime
 from client.crypto import blind_vote, unblind_signature, decode_vote
 from client.config import trusted_authority_sign_url, trusted_authority_submit_url
@@ -43,6 +43,17 @@ def login():
             st.session_state.k = find_large_prime(32)
 
     return
+
+
+# Register user
+def register_user():
+    st.subheader("Register Section")
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    if st.button("Register"):
+        register_user(username, password, st.session_state.connection)
 
 
 def logout():
@@ -135,8 +146,14 @@ def verify_vote():
 # Streamlit app layout
 st.title("User Authentication App")
 
+menu = ["Login", "Register"]
+choice = st.sidebar.selectbox("Menu", menu)
+
 if not st.session_state.loggedInUser:
-    login()
+    if choice == "Login":
+        login()
+    else:
+        register()
 else:
     logout()
 
