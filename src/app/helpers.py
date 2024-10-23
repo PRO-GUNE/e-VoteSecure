@@ -82,3 +82,25 @@ def extended_gcd(a, b):
     else:
         d, x, y = extended_gcd(b, a % b)
         return d, y, x - y * (a // b)
+    
+#generate key-pairs
+def generate_keypair(bits=32):
+    # Generate two large prime numbers p and q
+    p = find_large_prime(bits)
+    q = find_large_prime(bits)
+    e = 65537
+
+    # Calculate n = p * q
+    n = p * q
+    # Euler's totient function of n
+    phi_n = (p - 1) * (q - 1)
+
+    # Ensure e and phi_n are coprime and e is less than phi_n
+    assert gcd(phi_n, e) == 1 and e < phi_n, "e and phi_n are not coprime"
+
+    # Find the modular multiplicative inverse of e mod phi_n
+    d = extended_gcd(e, phi_n)[1] % phi_n
+    private_key = (d, n)  # private key (d, n)
+    public_key = (e, n)   # public key (e, n)
+    
+    return private_key, public_key

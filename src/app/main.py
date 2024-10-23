@@ -32,7 +32,7 @@ def login():
 
     if st.button("Login"):
         user = authenticate_user(username, password)
-
+        
         if user:
             # Set the loggedInUser session state
             st.session_state.loggedInUser = user
