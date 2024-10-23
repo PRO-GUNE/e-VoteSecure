@@ -1,5 +1,5 @@
 import random
-from helpers import generate_keypair
+from utils.helpers import generate_keypair
 
 # Function to encrypt a vote using the public key
 def encrypt_vote(vote, public_key):

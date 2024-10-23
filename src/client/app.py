@@ -1,4 +1,5 @@
 import streamlit as st
+from db.votepool import add_to_vote_pool
 from db.connection import get_db_connection
 from db.voters import set_voted_in_db
 from db.candidates import get_candidates_from_db
@@ -112,6 +113,7 @@ def vote():
         if response.status_code == 200:
             try:
                 signed_vote = response.json()["signed_vote"]
+                add_to_vote_pool(signed_vote,st.session_state.connection)
                 receipt = response.json()["receipt"]
             except ValueError:
                 print("Error decoding JSON response")
