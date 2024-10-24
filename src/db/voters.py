@@ -1,3 +1,4 @@
+import random
 def get_user_from_db(username, connection):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
@@ -16,6 +17,7 @@ def get_voted_voters_from_db(connection):
     cursor = connection.cursor()
     cursor.execute("SELECT username FROM users WHERE voted=1")
     voted_voters = cursor.fetchall()
+    random.shuffle(voted_voters) #to chage the voted order 
     return voted_voters
 
 
