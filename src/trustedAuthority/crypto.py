@@ -51,13 +51,13 @@ def decrypt_receipt(c):
 
 def blind_sign(m1):
     # Signing the blinded message
-    s1 = modular_exponentiation(m1, d, n)
+    s1 = modular_exponentiation(int(m1), d, n)
     print("Signature on blinded message:", s1)
     return s1
 
 
 def decrypt_signature(s1):
     # Decrypting the signature
-    s = modular_exponentiation(s1, e, n)
+    s = modular_exponentiation(int(s1), e, n)
     print("Decrypted signature:", s)
     return s

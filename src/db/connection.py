@@ -47,7 +47,8 @@ def setup_db():
         cursor.execute(
             """CREATE TABLE vote_pool (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                signed_vote TEXT NOT NULL
+                signed_vote TEXT NOT NULL,
+                counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)
             );"""
         )
     finally:

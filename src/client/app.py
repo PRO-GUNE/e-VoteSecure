@@ -1,7 +1,7 @@
 import streamlit as st
 from db.votepool import add_to_vote_pool
 from db.connection import get_db_connection
-from db.voters import set_voted_in_db
+from db.voters import set_voted_in_db, get_voted_voters_from_db
 from db.candidates import get_candidates_from_db
 from client.users import (
     authenticate_user,
@@ -118,7 +118,10 @@ def vote():
         if response.status_code == 200:
             try:
                 signed_vote = response.json()["signed_vote"]
-                add_to_vote_pool(signed_vote, st.session_state.connection)
+
+                # Submit the unblinded vote to the vote pool
+                vote = unblind_signature(signed_vote, st.session_state.k)
+                add_to_vote_pool(vote, st.session_state.connection)
                 receipt = response.json()["receipt"]
             except ValueError:
                 print("Error decoding JSON response")
@@ -128,10 +131,6 @@ def vote():
 
         st.session_state.signed_vote = signed_vote
         st.session_state.receipt = receipt
-
-        # Submit the unblinded vote to the vote pool
-        s = unblind_signature(signed_vote, st.session_state.k)
-        # TODO: Submit the vote to the vote pool
 
         # Update the voted status of the user in the database
         set_voted_in_db(
@@ -143,6 +142,9 @@ def vote():
 
         st.success(f"Successfully voted for {candidate}")
         get_vote_count()
+        st.session_state.voted_voters = get_voted_voters_from_db(
+            st.session_state.connection
+        )
 
 
 # Verify vote
@@ -172,7 +174,7 @@ def get_vote_count():
     if response.status_code == 200:
         vote_count = response.json()["vote_count"]
         st.session_state.vote_count = vote_count
-    return 0
+    return vote_count
 
 
 # Streamlit app layout
@@ -199,3 +201,15 @@ else:
         verify_vote()
 
     logout()
+
+# Display the voted voters
+if "voted_voters" not in st.session_state:
+    st.session_state.voted_voters = get_voted_voters_from_db(
+        st.session_state.connection
+    )
+
+voted_voters = {voter["username"] for voter in st.session_state.voted_voters}
+
+if voted_voters:
+    st.subheader("Voted Voters")
+    st.write(voted_voters)

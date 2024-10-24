@@ -12,6 +12,13 @@ def get_user_from_id_from_db(userid, connection):
     return user
 
 
+def get_voted_voters_from_db(connection):
+    cursor = connection.cursor()
+    cursor.execute("SELECT username FROM users WHERE voted=1")
+    voted_voters = cursor.fetchall()
+    return voted_voters
+
+
 def set_user_in_db(username, password, connection):
     cursor = connection.cursor()
     cursor.execute(
