@@ -3,7 +3,12 @@ from db.votepool import add_to_vote_pool
 from db.connection import get_db_connection
 from db.voters import set_voted_in_db
 from db.candidates import get_candidates_from_db
-from client.users import authenticate_user, register_new_user, verify_new_user
+from client.users import (
+    authenticate_user,
+    register_new_user,
+    verify_new_user,
+    send_login_email,
+)
 from utils.helpers import find_large_prime
 from client.crypto import blind_vote, unblind_signature
 from client.config import (
@@ -41,10 +46,9 @@ def login():
         user = authenticate_user(username, password, st.session_state.connection)
 
         if user:
-            # Set the loggedInUser session state
+            # Send login email
+            send_login_email(user["email"], username)
             st.session_state.loggedInUser = user
-
-            # Calculate k for user
             st.session_state.k = find_large_prime(32)
 
     return

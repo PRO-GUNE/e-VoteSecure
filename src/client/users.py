@@ -43,6 +43,30 @@ def send_otp(email, otp):
         return False
 
 
+# Send Login email
+def send_login_email(email, username):
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = EMAIL_USER
+        msg["To"] = email
+        msg["Subject"] = "Login Activity"
+
+        body = f"You just logged in to the voting system as {username}."
+        msg.attach(MIMEText(body, "plain"))
+
+        server = smtplib.SMTP(EMAIL_HOST, EMAIL_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASSWORD)
+        server.sendmail(EMAIL_USER, email, msg.as_string())
+        server.quit()
+
+        st.success("Login email sent successfully")
+
+    except Exception as e:
+        st.error(f"Failed to send email: {e}")
+        return False
+
+
 # Check if user exists and password is correct
 def authenticate_user(username, password, connection):
     try:
