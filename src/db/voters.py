@@ -19,10 +19,11 @@ def get_voted_voters_from_db(connection):
     return voted_voters
 
 
-def set_user_in_db(username, password, connection):
+def set_user_in_db(username, email, password, connection):
     cursor = connection.cursor()
     cursor.execute(
-        "INSERT INTO users (username, password) VALUES (%s, %s)", (username, password)
+        "INSERT INTO users (username, email, password) VALUES (%s, %s, %s)",
+        (username, email, password),
     )
     connection.commit()
 
