@@ -96,17 +96,20 @@ def authenticate_user(username, password, connection):
         return None
 
 
-def register_new_user(username, password, connection):
+def register_new_user(username, email, password, connection):
     try:
         # Hash password
         hashed_password = bcrypt.hashpw(
             password.encode("utf-8"), bcrypt.gensalt()
         ).decode("utf-8")
 
+        print(email)
+
         # Insert user into database
-        set_user_in_db(username, hashed_password, connection)
-        st.success("User registered successfully")
+        set_user_in_db(username, email, hashed_password, connection)
         st.session_state.verifyUser = False
+        st.session_state.otp = None
+        st.success("User registered successfully")
 
     except Exception as e:
         st.error(f"Failed to verify OTP: {e}")

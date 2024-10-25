@@ -71,8 +71,11 @@ def register():
         entered_otp = st.text_input("Enter OTP")
         if st.button("Verify OTP"):
             if int(entered_otp) == st.session_state.otp:
-                register_new_user(username, password, st.session_state.connection)
-                st.rerun()
+                register_new_user(
+                    username, email, password, st.session_state.connection
+                )
+                st.success("User registered successfully")
+
             else:
                 st.error("Invalid OTP")
 
