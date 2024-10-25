@@ -1,3 +1,5 @@
+import random
+
 def add_to_vote_pool(signed_vote, connection):
     cursor = connection.cursor()
     cursor.execute("INSERT INTO vote_pool (signed_vote) VALUES (%s)", (signed_vote,))
@@ -8,6 +10,7 @@ def get_vote_pool(connection):
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM vote_pool")
     vote_pool = cursor.fetchall()
+    random.shuffle(vote_pool) #shuffle vote pool
     return vote_pool
 
 

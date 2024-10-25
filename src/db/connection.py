@@ -46,7 +46,7 @@ def setup_db():
         )
         cursor.execute(
             """CREATE TABLE vote_pool (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id INT UNSIGNED PRIMARY KEY DEFAULT (FLOOR(RAND() * 4294967295)),  -- Generates a random UNSIGNED INT ID, can use BIGINT for large num of users
                 signed_vote TEXT NOT NULL,
                 counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)
             );"""
