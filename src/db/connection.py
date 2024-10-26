@@ -72,10 +72,9 @@ def setup_secondary_db():
         cursor = connection.cursor()
         cursor.execute("DROP TABLE IF EXISTS vote_table;")
         cursor.execute(
-            """CREATE TABLE vote_table (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                signed_vote TEXT NOT NULL,
-                counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)
+            """CREATE TABLE vote_pool (
+                unique_id VARCHAR(52) PRIMARY KEY,
+                signed_vote TEXT
             );"""
         )
     finally:
