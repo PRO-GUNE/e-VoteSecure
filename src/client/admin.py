@@ -2,7 +2,7 @@
 import streamlit as st
 from db.connection import get_db_connection
 from config import trusted_authority_vote_submit_url
-from db.votepool import get_vote_pool, set_vote_uncounted_in_db
+from trustedAuthority.trustedAuthority_votePool import get_vote_pool, set_vote_uncounted_in_db
 from users import send_otp
 from dotenv import load_dotenv
 import os

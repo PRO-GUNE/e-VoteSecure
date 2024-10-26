@@ -45,7 +45,7 @@ def setup_db():
                 );"""
         )
         cursor.execute(
-            """CREATE TABLE vote_pool (
+            """CREATE election_deparment_vote_table (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 signed_vote TEXT NOT NULL,
                 counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)

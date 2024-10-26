@@ -3,7 +3,7 @@ from db.connection import get_db_connection
 from db.voters import get_user_from_db, get_user_from_id_from_db
 from db.candidates import get_candidate_from_db_by_id
 from db.votes import set_votes_in_db
-from db.votepool import set_vote_counted_in_db
+from trustedAuthority_votePool import set_vote_counted_in_db
 from flask import request, jsonify
 
 connection = get_db_connection()
