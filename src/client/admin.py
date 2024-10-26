@@ -55,10 +55,10 @@ def admin_page():
 def vote_counting():
     st.write("Admin logged in")
 
-    votes = get_vote_pool(st.session_state.connection)
-
     st.write("Request for Vote counting to start")
     if st.button("Request Vote Counting"):
+        votes = get_vote_pool(st.session_state.connection)
+        random.shuffle(votes)
         response = requests.post(
             trusted_authority_vote_submit_url, json={"votes": votes}
         )
@@ -71,7 +71,8 @@ def vote_counting():
     if st.button("Request Vote Recounting"):
         # Set all counted votes to false
         set_vote_uncounted_in_db(st.session_state.connection)
-
+        votes = get_vote_pool(st.session_state.connection)
+        random.shuffle(votes)
         response = requests.post(
             trusted_authority_vote_submit_url, json={"votes": votes}
         )
