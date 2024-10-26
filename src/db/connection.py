@@ -1,18 +1,27 @@
 import pymysql
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+HOST = os.getenv("DB_HOST")
+PORT = os.getenv("DB_PORT")
+USER = os.getenv("DB_USER")
+PASSWORD = os.getenv("DB_PASSWORD")
 
 
-def get_db_connection():
+def get_db_connection(db_name="defaultdb"):
     timeout = 10
     connection = pymysql.connect(
         charset="utf8mb4",
         connect_timeout=timeout,
         cursorclass=pymysql.cursors.DictCursor,
-        db="defaultdb",
-        host="mysql-39341dcb-cmggun456-1c5e.g.aivencloud.com",
-        password="AVNS_b9CCV1O_xsp-dKGn1OT",
+        db=db_name,
+        host=HOST,
+        password=PASSWORD,
         read_timeout=timeout,
-        port=12530,
-        user="avnadmin",
+        port=int(PORT),
+        user=USER,
         write_timeout=timeout,
         autocommit=True,
     )
