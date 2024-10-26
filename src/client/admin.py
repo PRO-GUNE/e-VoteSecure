@@ -1,8 +1,11 @@
 # Admin page where admin can request for vote count to start
 import streamlit as st
 from db.connection import get_db_connection
-from config import trusted_authority_vote_submit_url
-from trustedAuthority.trustedAuthority_votePool import get_vote_pool, set_vote_uncounted_in_db
+from config import trusted_authority_get_token_url, trusted_authority_vote_submit_url
+from trustedAuthority.trustedAuthority_votePool import (
+    get_vote_pool,
+    set_vote_uncounted_in_db,
+)
 from users import send_otp
 from dotenv import load_dotenv
 import os
@@ -24,6 +27,9 @@ if "otp" not in st.session_state:
 
 if "admin" not in st.session_state:
     st.session_state.admin = False
+
+if "token" not in st.session_state:
+    st.session_state.token = None
 
 
 def admin_page():
@@ -47,6 +53,11 @@ def admin_page():
         entered_otp = st.text_input("Enter OTP")
         if st.button("Verify OTP"):
             if int(entered_otp) == st.session_state.otp:
+                token = requests.post(
+                    trusted_authority_get_token_url,
+                    json={"username": username, "password": password},
+                )
+                st.session_state.token = token.json()["token"]
                 st.session_state.otp = None
                 st.session_state.admin = True
                 st.success("Admin logged in successfully")

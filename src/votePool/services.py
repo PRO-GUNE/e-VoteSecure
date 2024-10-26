@@ -1,21 +1,40 @@
-from connection import get_db_connection,get_target_db_connection
+from connection import get_db_connection, get_target_db_connection
 from votepool_db import add_to_vote_pool, get_vote_count
 import random
+import jwt
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 connection = get_db_connection()
+
 
 def get_count():
     return get_vote_count(connection)
 
+
 def add_vote(vote):
-    status = add_to_vote_pool(vote,connection)
+    status = add_to_vote_pool(vote, connection)
     if status:
         return True
     else:
         return False
 
+
 def authenticate_JWT(token):
-    return True
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        if data["user_id"] == 0:
+            return True
+
+    except Exception as e:
+        print(e)
+        return False
+
 
 def data_migrate():
 
@@ -37,8 +56,9 @@ def data_migrate():
         # Shuffle the signed votes
         random.shuffle(signed_votes)
 
-
-        insert_query = "INSERT INTO election_deparment_vote_table (signed_vote) VALUES (%s)"
+        insert_query = (
+            "INSERT INTO election_deparment_vote_table (signed_vote) VALUES (%s)"
+        )
 
         for signed_vote in signed_votes:
             target_cursor.execute(insert_query, (signed_vote,))
@@ -58,6 +78,3 @@ def data_migrate():
         source_connection.close()
         target_cursor.close()
         target_connection.close()
-
-
-
