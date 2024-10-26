@@ -13,8 +13,9 @@ def get_vote_count():
 def vote_submit():
     try:
         data = request.json
+        id = data["id"]
         vote = data["signed_vote"]
-        status = add_vote(vote)
+        status = add_vote(id,vote)
 
         if status:
             return jsonify({"message": "Vote Added Successfully"}), 200
@@ -29,12 +30,15 @@ def vote_submit():
 def migrate_votes():
     try:
         data = request.json
-        token = data["signed_vote"]
+        token = data["token"]
         status = authenticate_JWT(token)
 
         if status:
-            data_migrate()
-            return jsonify({"message": "Votes Migrated Successfully"}), 200
+            migration_status = data_migrate()
+            if migration_status:
+                return jsonify({"message": "Votes Migrated Successfully"}), 200
+            else:
+                return jsonify({"message": "Votes Migration Unsuccessful"}), 409
         else:
             return jsonify({"message": "Unauthorized"}), 401
 

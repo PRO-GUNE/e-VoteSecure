@@ -1,8 +1,17 @@
-def add_to_vote_pool(signed_vote, connection):
-    cursor = connection.cursor()
-    cursor.execute("INSERT INTO vote_pool (signed_vote) VALUES (%s)", (signed_vote,))
-    connection.commit()
-    return connection.status()
+def add_to_vote_pool(unique_id, signed_vote, connection):
+    try:
+        cursor = connection.cursor()
+        cursor.execute(
+            "INSERT INTO vote_pool (unique_id, signed_vote) VALUES (%s, %s)",
+            (unique_id, signed_vote),
+        )
+        connection.commit()
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
+        connection.rollback() 
+        return False
+
 
 
 def get_vote_pool(connection):
@@ -15,7 +24,17 @@ def get_vote_pool(connection):
 def get_vote_count(connection):
     cursor = connection.cursor()
     cursor.execute("SELECT COUNT(*) FROM vote_pool")
-    count = cursor.fetchone()[0]  
+    
+    result = cursor.fetchone()  # Fetch one row
+
+    count = result['COUNT(*)']
     return count
+
+
+
+# CREATE TABLE vote_pool (
+#     unique_id VARCHAR(52) PRIMARY KEY,
+#     signed_vote TEXT
+
 
 

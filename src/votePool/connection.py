@@ -6,7 +6,7 @@ def get_db_connection():
         charset="utf8mb4",
         connect_timeout=timeout,
         cursorclass=pymysql.cursors.DictCursor,
-        db="defaultdb",
+        db="secondarydb",
         host="mysql-39341dcb-cmggun456-1c5e.g.aivencloud.com",
         password="AVNS_b9CCV1O_xsp-dKGn1OT",
         read_timeout=timeout,
