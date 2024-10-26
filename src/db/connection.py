@@ -29,13 +29,13 @@ def get_db_connection(db_name="defaultdb"):
     return connection
 
 
-# Setup database
-def setup_db():
+# Setup main database
+def setup_primary_db():
     try:
         connection = get_db_connection()
         print(connection)
         cursor = connection.cursor()
-        cursor.execute("DROP TABLE IF EXISTS users, candidates, vote_pool;")
+        cursor.execute("DROP TABLE IF EXISTS users, candidates, election_deparment_vote_table;")
         cursor.execute(
             """CREATE TABLE users (
                     id INT AUTO_INCREMENT PRIMARY KEY,      -- Unique identifier for each user
@@ -54,7 +54,7 @@ def setup_db():
                 );"""
         )
         cursor.execute(
-            """CREATE TABLE vote_pool (
+            """CREATE TABLE election_deparment_vote_table (
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 signed_vote TEXT NOT NULL,
                 counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)
@@ -63,6 +63,23 @@ def setup_db():
     finally:
         connection.close()
 
+
+# Setup secondary database
+def setup_secondary_db():
+    try:
+        connection = get_db_connection("secondarydb")
+        print(connection)
+        cursor = connection.cursor()
+        cursor.execute("DROP TABLE IF EXISTS vote_table;")
+        cursor.execute(
+            """CREATE TABLE vote_table (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                signed_vote TEXT NOT NULL,
+                counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)
+            );"""
+        )
+    finally:
+        connection.close()
 
 # Insert values to database
 def insert_values():
@@ -93,33 +110,6 @@ def insert_values():
     finally:
         connection.close()
 
-
-# Drop all tables
-def drop_all_tables():
-    try:
-        connection = get_db_connection()
-        cursor = connection.cursor()
-
-        # Query to drop all tables in the database
-        cursor.execute(
-            "SET FOREIGN_KEY_CHECKS = 0;"
-        )  # Disable foreign key checks temporarily
-        cursor.execute("SHOW TABLES;")
-        tables = cursor.fetchall()
-
-        # Drop each table one by one
-        for table in tables:
-            table_name = list(table.values())[
-                0
-            ]  # Extract the table name from the result
-            cursor.execute(f"DROP TABLE IF EXISTS {table_name};")
-
-        cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")  # Enable foreign key checks back
-        connection.commit()
-    finally:
-        connection.close()
-
-
 if __name__ == "__main__":
-    setup_db()
+    setup_primary_db()
     insert_values()

@@ -1,5 +1,4 @@
 import streamlit as st
-from db.votepool import add_to_vote_pool
 from db.connection import get_db_connection
 from db.voters import set_voted_in_db, get_voted_voters_from_db
 from db.candidates import get_candidates_from_db
@@ -15,6 +14,7 @@ from client.config import (
     trusted_authority_sign_url,
     trusted_authority_verify_url,
     trusted_authority_vote_count_url,
+    Vote_pool_vote_submit_url ,
     trusted_authority_get_token_url,
 )
 import requests
@@ -140,8 +140,21 @@ def vote():
 
                 # Submit the unblinded vote to the vote pool
                 vote = unblind_signature(signed_vote, st.session_state.k)
-                add_to_vote_pool(vote, st.session_state.connection)
-                receipt = response.json()["receipt"]
+                payload = {"signed_vote": vote}
+
+                # Make a POST request to the vote_submit API
+                response_vote_pool = requests.post(Vote_pool_vote_submit_url, json=payload)
+
+                # Check the response status code
+                if response_vote_pool.status_code == 200:
+                    # If the vote is added successfully, return the receipt
+                    receipt = response.json()["receipt"]
+                    return {"message": "Vote added successfully", "receipt": receipt}
+                
+                else:
+                    # If there was an error adding the vote, return the error message
+                    return {"message": response_vote_pool.json().get("message", "Unknown error")}
+                
             except ValueError:
                 print("Error decoding JSON response")
         else:
