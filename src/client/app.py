@@ -1,4 +1,6 @@
 import streamlit as st
+import uuid
+from datetime import datetime
 from db.connection import get_db_connection
 from db.voters import set_voted_in_db, get_voted_voters_from_db
 from db.candidates import get_candidates_from_db
@@ -140,7 +142,10 @@ def vote():
 
                 # Submit the unblinded vote to the vote pool
                 vote = unblind_signature(signed_vote, st.session_state.k)
-                payload = {"signed_vote": vote}
+                nonce= uuid.uuid4().hex
+                timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+                unique_id = f"{nonce}_{timestamp}"
+                payload = {"id": unique_id,"signed_vote": vote}
 
                 # Make a POST request to the vote_submit API
                 response_vote_pool = requests.post(Vote_pool_vote_submit_url, json=payload)

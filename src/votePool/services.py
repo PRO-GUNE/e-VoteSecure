@@ -1,14 +1,15 @@
 from connection import get_db_connection,get_target_db_connection
 from votepool_db import add_to_vote_pool, get_vote_count
 import random
+import jwt
 
 connection = get_db_connection()
 
 def get_count():
     return get_vote_count(connection)
 
-def add_vote(vote):
-    status = add_to_vote_pool(vote,connection)
+def add_vote(id,vote):
+    status = add_to_vote_pool(id,vote,connection)
     if status:
         return True
     else:
@@ -16,6 +17,16 @@ def add_vote(vote):
 
 def authenticate_JWT(token):
     return True
+
+# def authenticate_JWT(token):
+#     try:
+#         decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+#         return True  # or return the decoded token if you need it
+#     except jwt.ExpiredSignatureError:
+#         return False  # Token has expired
+#     except jwt.InvalidTokenError:
+#         return False  # Token is invalid
+
 
 def data_migrate():
 
@@ -31,12 +42,11 @@ def data_migrate():
         # Fetch all `signed_vote` values from the vote_pool table in the source database
         source_cursor.execute("SELECT signed_vote FROM vote_pool")
         signed_votes = source_cursor.fetchall()
-
-        signed_votes = [vote[0] for vote in signed_votes]
+        
+        signed_votes = [vote['signed_vote'] for vote in signed_votes]
 
         # Shuffle the signed votes
         random.shuffle(signed_votes)
-
 
         insert_query = "INSERT INTO election_deparment_vote_table (signed_vote) VALUES (%s)"
 
