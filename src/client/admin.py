@@ -1,7 +1,7 @@
 # Admin page where admin can request for vote count to start
 import streamlit as st
 from db.connection import get_db_connection
-from config import trusted_authority_vote_submit_url
+from config import trusted_authority_vote_submit_url, trusted_authority_get_token_url
 from db.votepool import get_vote_pool, set_vote_uncounted_in_db
 from users import send_otp
 from dotenv import load_dotenv
@@ -25,6 +25,9 @@ if "otp" not in st.session_state:
 if "admin" not in st.session_state:
     st.session_state.admin = False
 
+if "token" not in st.session_state:
+    st.session_state.token = None
+
 
 def admin_page():
     username = st.text_input("Username")
@@ -47,6 +50,9 @@ def admin_page():
         entered_otp = st.text_input("Enter OTP")
         if st.button("Verify OTP"):
             if int(entered_otp) == st.session_state.otp:
+                payload = {"username": username, "password": password}
+                token = requests.post(trusted_authority_get_token_url, json=payload)
+                st.session_state.token = token.json()["token"]
                 st.session_state.otp = None
                 st.session_state.admin = True
                 st.success("Admin logged in successfully")
@@ -57,30 +63,44 @@ def vote_counting():
 
     st.write("Request for Vote counting to start")
     if st.button("Request Vote Counting"):
-        votes = get_vote_pool(st.session_state.connection)
-        random.shuffle(votes)
-        response = requests.post(
-            trusted_authority_vote_submit_url, json={"votes": votes}
-        )
+        try:
+            votes = get_vote_pool(st.session_state.connection)
+            random.shuffle(votes)
+            response = requests.post(
+                headers={"Authorization": f"Bearer {st.session_state.token}"},
+                url=trusted_authority_vote_submit_url,
+                json={"votes": votes},
+            )
 
-        if response.status_code == 200:
-            st.success("Vote counting has started")
-        else:
+            if response.status_code == 200:
+                st.success("Vote counting has started")
+            else:
+                st.error("Vote counting request failed")
+        except Exception as e:
             st.error("Vote counting request failed")
+            st.error(e)
 
     if st.button("Request Vote Recounting"):
-        # Set all counted votes to false
-        set_vote_uncounted_in_db(st.session_state.connection)
-        votes = get_vote_pool(st.session_state.connection)
-        random.shuffle(votes)
-        response = requests.post(
-            trusted_authority_vote_submit_url, json={"votes": votes}
-        )
+        try:
+            # Set all counted votes to false
+            set_vote_uncounted_in_db(st.session_state.connection)
+            votes = get_vote_pool(st.session_state.connection)
+            random.shuffle(votes)
 
-        if response.status_code == 200:
-            st.success("Vote counting has started")
-        else:
+            response = requests.post(
+                headers={"Authorization": f"Bearer {st.session_state.token}"},
+                url=trusted_authority_vote_submit_url,
+                json={"votes": votes},
+            )
+
+            if response.status_code == 200:
+                st.success("Vote counting has started")
+            else:
+                st.error("Vote counting request failed")
+
+        except Exception as e:
             st.error("Vote counting request failed")
+            st.error(e)
 
 
 st.title("Admin Page")

@@ -10,7 +10,7 @@ USER = os.getenv("DB_USER")
 PASSWORD = os.getenv("DB_PASSWORD")
 
 
-def get_db_connection(db_name="defaultdb"):
+def get_db_connection(db_name="stabledb"):
     timeout = 10
     connection = pymysql.connect(
         charset="utf8mb4",

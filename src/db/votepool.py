@@ -23,3 +23,10 @@ def set_vote_uncounted_in_db(connection):
     cursor.execute("UPDATE vote_pool SET counted=0")
     connection.commit()
     return
+
+
+def get_vote_count(connection):
+    cursor = connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM vote_pool")
+    count = cursor.fetchone()
+    return count

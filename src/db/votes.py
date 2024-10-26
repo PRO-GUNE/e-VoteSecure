@@ -6,3 +6,10 @@ def set_votes_in_db(candidate, connection):
     )
     connection.commit()
     return
+
+
+def reset_votes_in_db(connection):
+    cursor = connection.cursor()
+    cursor.execute("UPDATE candidates SET vote_count=0")
+    connection.commit()
+    return

@@ -3,19 +3,24 @@ from trustedAuthority import app, crypto
 from db.connection import get_db_connection
 from db.voters import get_user_from_db, get_user_from_id_from_db
 from db.candidates import get_candidate_from_db_by_id
-from db.votes import set_votes_in_db
-from db.votepool import set_vote_counted_in_db
+from db.votes import set_votes_in_db, reset_votes_in_db
+from db.votepool import set_vote_counted_in_db, get_vote_count
 from flask import request, jsonify, current_app
 import jwt
 
 
 connection = get_db_connection()
 
-vote_count = 0
+vote_count = get_vote_count(connection)["COUNT(*)"]
 
 
 def count_votes(votes):
-    for vote in votes and not vote["counted"]:
+
+    reset_votes_in_db(connection)
+
+    for vote in votes:
+        if vote["counted"] == 1:
+            continue
         s = vote["signed_vote"]
         vote_id = vote["id"]
         candidate_id = crypto.decrypt_signature(s)
@@ -43,6 +48,11 @@ def token_required(f):
             data = jwt.decode(
                 token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
             )
+
+            # Check for admin user
+            if data["user_id"] == 0:
+                return f({"username": "admin"}, *args, **kwargs)
+
             current_user = get_user_from_id_from_db(data["user_id"], connection)
             if current_user is None:
                 return {
@@ -71,6 +81,21 @@ def public_key():
 @app.route("/get_token", methods=["POST"])
 def get_token():
     data = request.json
+    print(data)
+    if data["username"] == "admin" and data["password"] == "admin":
+        try:
+            token = jwt.encode(
+                {"user_id": 0},
+                current_app.config["SECRET_KEY"],
+                algorithm="HS256",
+            )
+
+            return jsonify({"token": token})
+
+        except Exception as e:
+            print(e)
+            return jsonify({"message": str(e)}), 500
+
     user = get_user_from_db(data["username"], connection)
 
     if not user:
@@ -132,7 +157,8 @@ def verify():
 
 # Needs to be modified to use third party API introduced by @Nusal
 @app.route("/vote_submit", methods=["POST"])
-def vote_submit():
+@token_required
+def vote_submit(current_user):
     try:
         data = request.json
         votes = data["votes"]
