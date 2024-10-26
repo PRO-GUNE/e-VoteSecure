@@ -15,6 +15,7 @@ from client.config import (
     trusted_authority_sign_url,
     trusted_authority_verify_url,
     trusted_authority_vote_count_url,
+    trusted_authority_get_token_url,
 )
 import requests
 
@@ -24,6 +25,9 @@ if "connection" not in st.session_state:
 
 if "loggedInUser" not in st.session_state:
     st.session_state.loggedInUser = None
+
+if "token" not in st.session_state:
+    st.session_state.token = None
 
 if "voted" not in st.session_state:
     st.session_state.voted = False
@@ -46,10 +50,20 @@ def login():
         user = authenticate_user(username, password, st.session_state.connection)
 
         if user:
-            # Send login email
-            send_login_email(user["email"], username)
-            st.session_state.loggedInUser = user
-            st.session_state.k = find_large_prime(32)
+            token = requests.post(
+                url=trusted_authority_get_token_url,
+                json={"username": username},
+            )
+
+            if token.status_code == 200:
+                # Send login email
+                send_login_email(user["email"], username)
+                st.session_state.loggedInUser = user
+                st.session_state.token = token.json()["token"]
+                st.session_state.k = find_large_prime(32)
+
+            else:
+                st.error("Login Failed")
 
     return
 
@@ -83,6 +97,7 @@ def register():
 def logout():
     if st.button("Logout"):
         st.session_state.loggedInUser = None
+        st.session_state.token = None
         st.session_state.voted = False
         st.session_state.k = None
         st.session_state.signed_vote = None
@@ -113,6 +128,7 @@ def vote():
         }
 
         response = requests.post(
+            headers={"Authorization": f"Bearer {st.session_state.token}"},
             url=trusted_authority_sign_url,
             json=payload,
         )
@@ -162,6 +178,7 @@ def verify_vote():
         }
 
         response = requests.post(
+            headers={"Authorization": f"Bearer {st.session_state.token}"},
             url=trusted_authority_verify_url,
             json=payload,
         )
