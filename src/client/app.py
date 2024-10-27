@@ -80,8 +80,9 @@ def register():
     password = st.text_input("Password", type="password")
 
     if st.button("Register"):
-        verify_new_user(username, email, st.session_state.connection)
-        st.session_state.verifyUser = True
+        st.session_state.verifyUser = verify_new_user(
+            username, email, st.session_state.connection
+        )
 
     if st.session_state.verifyUser:
         # Enter OTP

@@ -108,7 +108,7 @@ def register_new_user(username, email, password, connection):
         set_user_in_db(username, email, hashed_password, connection)
         st.session_state.verifyUser = False
         st.session_state.otp = None
-        st.success("User registered successfully")
+        return True
 
     except Exception as e:
         st.error(f"Failed to verify OTP: {e}")
