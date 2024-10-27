@@ -35,7 +35,9 @@ def setup_primary_db():
         connection = get_db_connection()
         print(connection)
         cursor = connection.cursor()
-        cursor.execute("DROP TABLE IF EXISTS users, candidates, election_deparment_vote_table;")
+        cursor.execute(
+            "DROP TABLE IF EXISTS users, candidates, election_deparment_vote_table;"
+        )
         cursor.execute(
             """CREATE TABLE users (
                     id INT AUTO_INCREMENT PRIMARY KEY,      -- Unique identifier for each user
@@ -70,7 +72,7 @@ def setup_secondary_db():
         connection = get_db_connection("secondarydb")
         print(connection)
         cursor = connection.cursor()
-        cursor.execute("DROP TABLE IF EXISTS vote_table;")
+        cursor.execute("DROP TABLE IF EXISTS vote_pool;")
         cursor.execute(
             """CREATE TABLE vote_pool (
                 unique_id VARCHAR(52) PRIMARY KEY,
@@ -79,6 +81,7 @@ def setup_secondary_db():
         )
     finally:
         connection.close()
+
 
 # Insert values to database
 def insert_values():
@@ -109,6 +112,8 @@ def insert_values():
     finally:
         connection.close()
 
+
 if __name__ == "__main__":
     setup_primary_db()
+    setup_secondary_db()
     insert_values()

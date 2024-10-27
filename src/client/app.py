@@ -2,7 +2,7 @@ import streamlit as st
 import uuid
 from datetime import datetime
 from db.connection import get_db_connection
-from db.voters import set_voted_in_db, get_voted_voters_from_db,get_user_from_db
+from db.voters import set_voted_in_db, get_voted_voters_from_db, get_user_from_db
 from db.candidates import get_candidates_from_db
 from client.users import (
     authenticate_user,
@@ -16,7 +16,7 @@ from client.config import (
     trusted_authority_sign_url,
     trusted_authority_verify_url,
     vote_pool_vote_count,
-    Vote_pool_vote_submit_url ,
+    Vote_pool_vote_submit_url,
     trusted_authority_get_token_url,
 )
 import requests
@@ -60,6 +60,7 @@ def login():
             if token.status_code == 200:
                 # Send login email
                 send_login_email(user["email"], username)
+                st.success(f"User Logged In Successfully")
                 st.session_state.loggedInUser = user
                 st.session_state.token = token.json()["token"]
                 st.session_state.k = find_large_prime(32)
@@ -116,8 +117,10 @@ def vote():
     candidates = st.session_state.candidates
     candidate_names = [candidate["candidate"] for candidate in candidates]
     candidate = st.selectbox("Candidate", candidate_names)
-    user = get_user_from_db(st.session_state.loggedInUser["username"], st.session_state.connection)
-    voted_status = user['voted']
+    user = get_user_from_db(
+        st.session_state.loggedInUser["username"], st.session_state.connection
+    )
+    voted_status = user["voted"]
 
     if st.button("Vote") and voted_status == 0:
         # Blind the vote
@@ -144,13 +147,15 @@ def vote():
 
                 # Submit the unblinded vote to the vote pool
                 vote = unblind_signature(signed_vote, st.session_state.k)
-                nonce= uuid.uuid4().hex
-                timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+                nonce = uuid.uuid4().hex
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                 unique_id = f"{nonce}_{timestamp}"
-                payload = {"id": unique_id,"signed_vote": vote}
+                payload = {"id": unique_id, "signed_vote": vote}
 
                 # Make a POST request to the vote_submit API
-                response_vote_pool = requests.post(Vote_pool_vote_submit_url, json=payload)
+                response_vote_pool = requests.post(
+                    Vote_pool_vote_submit_url, json=payload
+                )
 
                 # Check the response status code
                 if response_vote_pool.status_code == 200:
@@ -158,7 +163,8 @@ def vote():
                     receipt = response.json()["receipt"]
                     # Update the voted status of the user in the database
                     set_voted_in_db(
-                        st.session_state.loggedInUser["username"], st.session_state.connection
+                        st.session_state.loggedInUser["username"],
+                        st.session_state.connection,
                     )
                     st.session_state.signed_vote = signed_vote
                     st.session_state.receipt = receipt
@@ -171,20 +177,22 @@ def vote():
                     st.session_state.voted_voters = get_voted_voters_from_db(
                         st.session_state.connection
                     )
-                    
+
                     return {"message": "Vote added successfully", "receipt": receipt}
-                
+
                 else:
                     # If there was an error adding the vote, return the error message
-                    return {"message": response_vote_pool.json().get("message", "Unknown error")}
-                
+                    return {
+                        "message": response_vote_pool.json().get(
+                            "message", "Unknown error"
+                        )
+                    }
+
             except ValueError:
                 print("Error decoding JSON response")
         else:
             st.error("Error signing the vote")
             return
-
-
 
 
 # Verify vote

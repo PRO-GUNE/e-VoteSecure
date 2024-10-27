@@ -8,7 +8,6 @@ from config import (
     trusted_authority_vote_count_url,
 )
 from trustedAuthority.trustedAuthority_votePool import (
-    get_vote_pool,
     set_vote_uncounted_in_db,
 )
 from users import send_otp
@@ -35,6 +34,12 @@ if "admin" not in st.session_state:
 
 if "token" not in st.session_state:
     st.session_state.token = None
+
+if "votes_migrated" not in st.session_state:
+    st.session_state.votes_migrated = False
+
+if "results_in" not in st.session_state:
+    st.session_state.results_in = False
 
 
 def admin_page():
@@ -66,27 +71,29 @@ def admin_page():
                 st.session_state.otp = None
                 st.session_state.admin = True
                 st.success("Admin logged in successfully")
+            else:
+                st.error("Invalid OTP")
 
 
 def migrate_votes():
     st.subheader("Migrate Votes")
     if st.button("Migrate Votes"):
         response = requests.post(
-            url=vote_pool_vote_migrate_url,  
+            url=vote_pool_vote_migrate_url,
             headers={"Authorization": f"Bearer {st.session_state.token}"},
         )
 
         if response.status_code == 200:
             st.success("Votes migrated successfully")
+            st.session_state.votes_migrated = True
         else:
             st.error("Votes migration failed")
 
 
 def vote_counting():
+    st.session_state.results_in = False
     st.subheader("Vote Counting")
     st.write("Admin logged in")
-
-    votes = get_vote_pool(st.session_state.connection)
 
     st.write("Request for Vote counting to start")
     if st.button("Request Vote Counting"):
@@ -96,12 +103,13 @@ def vote_counting():
 
         if response.status_code == 200:
             st.success("Vote counting has started")
-            print_end_result()
+            st.session_state.results_in = True
         else:
             st.error("Vote counting request failed")
 
     if st.button("Request Vote Recounting"):
         # Set all counted votes to false
+        st.session_state.results_in = False
         set_vote_uncounted_in_db(st.session_state.connection)
 
         response = requests.post(
@@ -110,9 +118,10 @@ def vote_counting():
 
         if response.status_code == 200:
             st.success("Vote counting has started")
-            print_end_result()
+            st.session_state.results_in = True
         else:
             st.error("Vote counting request failed")
+
 
 def print_end_result():
     # Display the list of candidates and their votes
@@ -122,12 +131,18 @@ def print_end_result():
     for candidate in candidates:
         st.write(f"{candidate['candidate']} - Vote Count: {candidate['vote_count']}")
 
+
 st.title("Admin Page")
 
 if not st.session_state.admin:
     admin_page()
 else:
-    # Display both vote counting and vote migration buttons separately
-    vote_counting()
-    st.markdown("---")  # Add a separator line
-    migrate_votes()
+    if st.session_state.votes_migrated:
+        st.write("Votes have been migrated")
+        # Display both vote counting and vote migration buttons separately
+        vote_counting()
+    else:
+        migrate_votes()
+
+    if st.session_state.results_in:
+        print_end_result()
