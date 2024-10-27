@@ -80,11 +80,9 @@ def authenticate_user(username, password, connection):
             print(f"Password match: {password_match}")
 
             if password_match:
-                if user["voted"]:
-                    raise Exception("Already Voted")
-                else:
-                    st.success(f"Welcome {username}")
-                    return user
+                st.success(f"Welcome {username}")
+                return user
+            
             else:
                 raise Exception("Invalid username or password")
 

@@ -2,7 +2,7 @@ import streamlit as st
 import uuid
 from datetime import datetime
 from db.connection import get_db_connection
-from db.voters import set_voted_in_db, get_voted_voters_from_db
+from db.voters import set_voted_in_db, get_voted_voters_from_db,get_user_from_db
 from db.candidates import get_candidates_from_db
 from client.users import (
     authenticate_user,
@@ -116,8 +116,10 @@ def vote():
     candidates = st.session_state.candidates
     candidate_names = [candidate["candidate"] for candidate in candidates]
     candidate = st.selectbox("Candidate", candidate_names)
+    user = get_user_from_db(st.session_state.loggedInUser["username"], st.session_state.connection)
+    voted_status = user['voted']
 
-    if st.button("Vote"):
+    if st.button("Vote") and voted_status == 0:
         # Blind the vote
         m = candidates[candidate_names.index(candidate)]["id"]
         m1 = blind_vote(st.session_state.k, m)
@@ -154,6 +156,10 @@ def vote():
                 if response_vote_pool.status_code == 200:
                     # If the vote is added successfully, return the receipt
                     receipt = response.json()["receipt"]
+                            # Update the voted status of the user in the database
+                    set_voted_in_db(
+                        st.session_state.loggedInUser["username"], st.session_state.connection
+                    )
                     return {"message": "Vote added successfully", "receipt": receipt}
                 
                 else:
@@ -168,11 +174,6 @@ def vote():
 
         st.session_state.signed_vote = signed_vote
         st.session_state.receipt = receipt
-
-        # Update the voted status of the user in the database
-        set_voted_in_db(
-            st.session_state.loggedInUser["username"], st.session_state.connection
-        )
         st.session_state.voted = True
         st.info("Copy the receipt to verify your vote")
         st.code(receipt, language="bash")
@@ -182,6 +183,10 @@ def vote():
         st.session_state.voted_voters = get_voted_voters_from_db(
             st.session_state.connection
         )
+
+    else:
+       st.error("Error in voting")
+       return 
 
 
 # Verify vote
