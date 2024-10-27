@@ -28,6 +28,7 @@ def add_vote(id, vote):
 def authenticate_JWT(token):
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        print(data)
         if data["user_id"] == 0:
             return True
 

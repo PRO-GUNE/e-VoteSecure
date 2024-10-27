@@ -117,3 +117,4 @@ if not st.session_state.admin:
 
 else:
     vote_counting()
+    migrate_votes()

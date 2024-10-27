@@ -43,6 +43,7 @@ def migrate_votes():
             }, 401
 
         status = authenticate_JWT(token)
+        print(status)
 
         if status:
             migration_status = data_migrate()

@@ -12,11 +12,11 @@ import jwt
 
 connection = get_db_connection()
 
-vote_count = 0
-
 
 def count_votes(votes):
-    for vote in votes and not vote["counted"]:
+    for vote in votes:
+        if vote["counted"]:
+            continue
         s = vote["signed_vote"]
         vote_id = vote["id"]
         candidate_id = crypto.decrypt_signature(s)
@@ -106,11 +106,6 @@ def get_token():
         return jsonify({"message": str(e)}), 500
 
 
-@app.route("/vote_count", methods=["GET"])
-def get_vote_count():
-    return jsonify({"vote_count": vote_count})
-
-
 @app.route("/sign", methods=["POST"])
 @token_required
 def sign(current_user):
@@ -123,11 +118,6 @@ def sign(current_user):
     m1 = data["blinded_vote"]
     s1 = crypto.blind_sign(m1)
 
-    # Increment the vote count - how to handle race conditions?
-    # Get vote count from third party API introduced by @Nusal
-    global vote_count
-    vote_count += 1
-
     # Create receipt for the user
     receipt = crypto.encrypt_receipt(current_user["id"])
     return jsonify({"signed_vote": s1, "receipt": receipt})
@@ -137,7 +127,7 @@ def sign(current_user):
 def verify():
     data = request.json
     user_id = crypto.decrypt_receipt(data["receipt"])
-
+    print(user_id)
     # Check if the user is authorized to vote
     user = get_user_from_id_from_db(user_id, connection)
     if not user:
