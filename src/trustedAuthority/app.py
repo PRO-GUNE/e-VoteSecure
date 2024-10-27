@@ -12,7 +12,7 @@ import jwt
 
 connection = get_db_connection()
 
-
+@app.route("/vote_count", methods=["POST"])
 def count_votes(votes):
     for vote in votes:
         if vote["counted"]:

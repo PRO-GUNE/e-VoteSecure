@@ -1,6 +1,7 @@
 # Admin page where admin can request for vote count to start
 import streamlit as st
-from db.connection import get_db_connection
+from db.connection import get_db_connection,get
+from db.candidates import get_candidates_from_db
 from config import (
     trusted_authority_get_token_url,
     trusted_authority_vote_submit_url,
@@ -90,12 +91,13 @@ def vote_counting():
     st.write("Request for Vote counting to start")
     if st.button("Request Vote Counting"):
         response = requests.post(
-            trusted_authority_vote_count_url="http://localhost:5001/vote_count",
+            trusted_authority_vote_count_url="http://localhost:5000/vote_count",
             json={"votes": votes},
         )
 
         if response.status_code == 200:
             st.success("Vote counting has started")
+            print_end_result()
         else:
             st.error("Vote counting request failed")
 
@@ -104,15 +106,23 @@ def vote_counting():
         set_vote_uncounted_in_db(st.session_state.connection)
 
         response = requests.post(
-            trusted_authority_vote_count_url="http://localhost:5001/vote_count",
+            trusted_authority_vote_count_url="http://localhost:5000/vote_count",
             json={"votes": votes},
         )
 
         if response.status_code == 200:
             st.success("Vote counting has started")
+            print_end_result()
         else:
             st.error("Vote counting request failed")
 
+def print_end_result():
+    # Display the list of candidates and their votes
+    candidates = get_candidates_from_db(st.session_state.connection)
+    st.header("Candidates")
+
+    for candidate in candidates:
+        st.write(f"{candidate['candidate']} - Vote Count: {candidate['vote_count']}")
 
 st.title("Admin Page")
 
