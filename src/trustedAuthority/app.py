@@ -1,5 +1,6 @@
 from functools import wraps
 from trustedAuthority import app, crypto
+import crypto
 from db.connection import get_db_connection
 from db.voters import get_user_from_db, get_user_from_id_from_db
 from db.candidates import get_candidate_from_db_by_id

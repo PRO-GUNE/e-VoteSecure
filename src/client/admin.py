@@ -1,10 +1,9 @@
 # Admin page where admin can request for vote count to start
 import streamlit as st
-from db.connection import get_db_connection,get
+from db.connection import get_db_connection
 from db.candidates import get_candidates_from_db
 from config import (
     trusted_authority_get_token_url,
-    trusted_authority_vote_submit_url,
     vote_pool_vote_migrate_url,
     trusted_authority_vote_count_url,
 )
@@ -73,7 +72,7 @@ def migrate_votes():
     st.subheader("Migrate Votes")
     if st.button("Migrate Votes"):
         response = requests.post(
-            url=vote_pool_vote_migrate_url,  # Ensure the URL is correct
+            url=vote_pool_vote_migrate_url,  
             headers={"Authorization": f"Bearer {st.session_state.token}"},
         )
 

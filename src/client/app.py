@@ -15,7 +15,7 @@ from client.crypto import blind_vote, unblind_signature
 from client.config import (
     trusted_authority_sign_url,
     trusted_authority_verify_url,
-    trusted_authority_vote_count_url,
+    vote_pool_vote_count,
     Vote_pool_vote_submit_url ,
     trusted_authority_get_token_url,
 )
@@ -211,7 +211,7 @@ def verify_vote():
 
 
 def get_vote_count():
-    response = requests.get(url=trusted_authority_vote_count_url)
+    response = requests.get(url=vote_pool_vote_count)
     if response.status_code == 200:
         vote_count = response.json()["vote_count"]
         st.session_state.vote_count = vote_count
