@@ -184,9 +184,6 @@ def vote():
             st.error("Error signing the vote")
             return
 
-    else:
-       st.error("Error in voting")
-       return 
 
 
 # Verify vote
