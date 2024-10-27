@@ -95,29 +95,14 @@ def vote_counting():
     st.subheader("Vote Counting")
     st.write("Admin logged in")
 
-    st.write("Request for Vote counting to start")
+    st.write("Request for Vote counting")
     if st.button("Request Vote Counting"):
         response = requests.post(
             trusted_authority_vote_count_url,
         )
 
         if response.status_code == 200:
-            st.success("Vote counting has started")
-            st.session_state.results_in = True
-        else:
-            st.error("Vote counting request failed")
-
-    if st.button("Request Vote Recounting"):
-        # Set all counted votes to false
-        st.session_state.results_in = False
-        set_vote_uncounted_in_db(st.session_state.connection)
-
-        response = requests.post(
-            trusted_authority_vote_count_url,
-        )
-
-        if response.status_code == 200:
-            st.success("Vote counting has started")
+            st.success("Vote counting has finished")
             st.session_state.results_in = True
         else:
             st.error("Vote counting request failed")
