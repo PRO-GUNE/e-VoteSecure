@@ -90,7 +90,7 @@ def vote_counting():
     st.write("Request for Vote counting to start")
     if st.button("Request Vote Counting"):
         response = requests.post(
-            trusted_authority_vote_submit_url, json={"votes": votes}
+            trusted_authority_vote_count_url = "http://localhost:5001/vote_count", json={"votes": votes}
         )
 
         if response.status_code == 200:
@@ -103,7 +103,7 @@ def vote_counting():
         set_vote_uncounted_in_db(st.session_state.connection)
 
         response = requests.post(
-            trusted_authority_vote_submit_url, json={"votes": votes}
+            trusted_authority_vote_count_url = "http://localhost:5001/vote_count", json={"votes": votes}
         )
 
         if response.status_code == 200:
