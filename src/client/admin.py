@@ -68,10 +68,11 @@ def admin_page():
 
 
 def migrate_votes():
+    st.subheader("Migrate Votes")
     if st.button("Migrate Votes"):
         response = requests.post(
+            url=vote_pool_vote_migrate_url,  # Ensure the URL is correct
             headers={"Authorization": f"Bearer {st.session_state.token}"},
-            url=vote_pool_vote_migrate_url,
         )
 
         if response.status_code == 200:
@@ -81,6 +82,7 @@ def migrate_votes():
 
 
 def vote_counting():
+    st.subheader("Vote Counting")
     st.write("Admin logged in")
 
     votes = get_vote_pool(st.session_state.connection)
@@ -114,6 +116,8 @@ st.title("Admin Page")
 
 if not st.session_state.admin:
     admin_page()
-
 else:
+    # Display both vote counting and vote migration buttons separately
     vote_counting()
+    st.markdown("---")  # Add a separator line
+    migrate_votes()
