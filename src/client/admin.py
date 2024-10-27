@@ -6,6 +6,7 @@ from config import (
     trusted_authority_get_token_url,
     trusted_authority_vote_submit_url,
     vote_pool_vote_migrate_url,
+    trusted_authority_vote_count_url,
 )
 from trustedAuthority.trustedAuthority_votePool import (
     get_vote_pool,
@@ -91,8 +92,7 @@ def vote_counting():
     st.write("Request for Vote counting to start")
     if st.button("Request Vote Counting"):
         response = requests.post(
-            trusted_authority_vote_count_url="http://localhost:5000/vote_count",
-            json={"votes": votes},
+            trusted_authority_vote_count_url,
         )
 
         if response.status_code == 200:
@@ -106,8 +106,7 @@ def vote_counting():
         set_vote_uncounted_in_db(st.session_state.connection)
 
         response = requests.post(
-            trusted_authority_vote_count_url="http://localhost:5000/vote_count",
-            json={"votes": votes},
+            trusted_authority_vote_count_url,
         )
 
         if response.status_code == 200:
