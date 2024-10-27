@@ -83,7 +83,6 @@ def authenticate_user(username, password, connection):
                 if user["voted"]:
                     raise Exception("Already Voted")
                 else:
-                    st.success(f"Welcome {username}")
                     return user
             else:
                 raise Exception("Invalid username or password")

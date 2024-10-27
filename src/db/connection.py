@@ -55,10 +55,53 @@ def setup_db():
         )
         cursor.execute(
             """CREATE TABLE vote_pool (
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id BIGINT UNSIGNED PRIMARY KEY,
                 signed_vote TEXT NOT NULL,
                 counted BOOLEAN DEFAULT FALSE             -- Boolean field to track if the vote was counted (default is FALSE)
             );"""
+        )
+
+        cursor.execute(
+            """
+            CREATE PROCEDURE AddVoteToPool(
+                IN vote_text TEXT
+            )
+            BEGIN
+                DECLARE last_vote_id BIGINT UNSIGNED;
+                DECLARE new_vote_id BIGINT UNSIGNED;
+
+                -- Error handling to roll back transaction in case of any error
+                DECLARE EXIT HANDLER FOR SQLEXCEPTION
+                BEGIN
+                    ROLLBACK;
+                    SIGNAL SQLSTATE '45000'
+                        SET MESSAGE_TEXT = 'Failed to insert vote';
+                END;
+
+                START TRANSACTION;
+
+                -- Get the last entered vote ID; if no rows exist, set to NULL
+                SELECT id INTO last_vote_id FROM vote_pool
+                ORDER BY id DESC
+                LIMIT 1;
+
+                -- Generate new_vote_id
+                IF last_vote_id IS NULL THEN
+                    -- If no previous vote exists, generate a random BIGINT UNSIGNED for the first vote
+                    SET new_vote_id = FLOOR(RAND() * POW(2, 63));
+                ELSE
+                    -- Otherwise, hash the last_vote_id and convert to BIGINT
+                    SET new_vote_id = CONV(SUBSTRING(SHA2(last_vote_id, 256), 1, 16), 16, 10);
+                END IF;
+
+                -- Insert new vote record into vote_pool table
+                INSERT INTO vote_pool (id, signed_vote)
+                VALUES (new_vote_id, vote_text);
+
+                -- Commit the transaction if successful
+                COMMIT;
+            END;
+            """
         )
     finally:
         connection.close()

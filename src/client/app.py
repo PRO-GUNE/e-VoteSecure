@@ -58,6 +58,7 @@ def login():
             if token.status_code == 200:
                 # Send login email
                 send_login_email(user["email"], username)
+                st.success(f"Welcome {username}")
                 st.session_state.loggedInUser = user
                 st.session_state.token = token.json()["token"]
                 st.session_state.k = find_large_prime(32)

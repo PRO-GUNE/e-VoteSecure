@@ -73,7 +73,7 @@ def vote_counting():
             )
 
             if response.status_code == 200:
-                st.success("Vote counting has started")
+                st.success("Vote counting has Finished")
             else:
                 st.error("Vote counting request failed")
         except Exception as e:
@@ -86,6 +86,7 @@ def vote_counting():
             set_vote_uncounted_in_db(st.session_state.connection)
             votes = get_vote_pool(st.session_state.connection)
             random.shuffle(votes)
+            print(votes)
 
             response = requests.post(
                 headers={"Authorization": f"Bearer {st.session_state.token}"},
@@ -94,7 +95,7 @@ def vote_counting():
             )
 
             if response.status_code == 200:
-                st.success("Vote counting has started")
+                st.success("Vote counting has Finished")
             else:
                 st.error("Vote counting request failed")
 
