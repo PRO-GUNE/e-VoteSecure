@@ -160,6 +160,18 @@ def vote():
                     set_voted_in_db(
                         st.session_state.loggedInUser["username"], st.session_state.connection
                     )
+                    st.session_state.signed_vote = signed_vote
+                    st.session_state.receipt = receipt
+                    st.session_state.voted = True
+                    st.info("Copy the receipt to verify your vote")
+                    st.code(receipt, language="bash")
+
+                    st.success(f"Successfully voted for {candidate}")
+                    get_vote_count()
+                    st.session_state.voted_voters = get_voted_voters_from_db(
+                        st.session_state.connection
+                    )
+                    
                     return {"message": "Vote added successfully", "receipt": receipt}
                 
                 else:
@@ -171,18 +183,6 @@ def vote():
         else:
             st.error("Error signing the vote")
             return
-
-        st.session_state.signed_vote = signed_vote
-        st.session_state.receipt = receipt
-        st.session_state.voted = True
-        st.info("Copy the receipt to verify your vote")
-        st.code(receipt, language="bash")
-
-        st.success(f"Successfully voted for {candidate}")
-        get_vote_count()
-        st.session_state.voted_voters = get_voted_voters_from_db(
-            st.session_state.connection
-        )
 
     else:
        st.error("Error in voting")
