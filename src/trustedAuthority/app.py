@@ -2,9 +2,15 @@ from functools import wraps
 from trustedAuthority import app, crypto
 from db.connection import get_db_connection
 from db.voters import get_user_from_db, get_user_from_id_from_db
-from db.candidates import get_candidate_from_db_by_id
-from db.votes import set_votes_in_db
-from trustedAuthority.trustedAuthority_votePool import set_vote_counted_in_db
+from db.candidates import (
+    get_candidate_from_db_by_id,
+    set_votes_in_db,
+    reset_votes_in_db,
+)
+from trustedAuthority.trustedAuthority_votePool import (
+    set_vote_counted_in_db,
+    get_vote_pool,
+)
 from flask import request, jsonify
 from flask import request, jsonify, current_app
 import jwt
@@ -12,19 +18,29 @@ import jwt
 
 connection = get_db_connection()
 
-vote_count = 0
 
+@app.route("/vote_count", methods=["POST"])
+def count_votes():
+    try:
+        reset_votes_in_db(connection)
+        votes = get_vote_pool(connection)
+        for vote in votes:
+            if vote["counted"]:
+                continue
+            s = vote["signed_vote"]
+            vote_id = vote["id"]
+            candidate_id = crypto.decrypt_signature(s)
 
-def count_votes(votes):
-    for vote in votes and not vote["counted"]:
-        s = vote["signed_vote"]
-        vote_id = vote["id"]
-        candidate_id = crypto.decrypt_signature(s)
+            # Update the votes in the database
+            candidate = get_candidate_from_db_by_id(candidate_id, connection)
+            set_votes_in_db(candidate["candidate"], connection)
+            set_vote_counted_in_db(vote_id, connection)
 
-        # Update the votes in the database
-        candidate = get_candidate_from_db_by_id(candidate_id, connection)
-        set_votes_in_db(candidate["candidate"], connection)
-        set_vote_counted_in_db(vote_id, connection)
+        return jsonify({"message": "Votes counted successfully"})
+
+    except Exception as e:
+        print(e)
+        return jsonify({"message": str(e)}), 500
 
 
 def token_required(f):
@@ -106,11 +122,6 @@ def get_token():
         return jsonify({"message": str(e)}), 500
 
 
-@app.route("/vote_count", methods=["GET"])
-def get_vote_count():
-    return jsonify({"vote_count": vote_count})
-
-
 @app.route("/sign", methods=["POST"])
 @token_required
 def sign(current_user):
@@ -123,11 +134,6 @@ def sign(current_user):
     m1 = data["blinded_vote"]
     s1 = crypto.blind_sign(m1)
 
-    # Increment the vote count - how to handle race conditions?
-    # Get vote count from third party API introduced by @Nusal
-    global vote_count
-    vote_count += 1
-
     # Create receipt for the user
     receipt = crypto.encrypt_receipt(current_user["id"])
     return jsonify({"signed_vote": s1, "receipt": receipt})
@@ -137,28 +143,13 @@ def sign(current_user):
 def verify():
     data = request.json
     user_id = crypto.decrypt_receipt(data["receipt"])
-
+    print(user_id)
     # Check if the user is authorized to vote
     user = get_user_from_id_from_db(user_id, connection)
     if not user:
         return jsonify({"message": "Vote not recognized"}), 404
 
     return jsonify({"message": "Vote verified successfully"})
-
-
-# Needs to be modified to use third party API introduced by @Nusal
-@app.route("/vote_submit", methods=["POST"])
-def vote_submit():
-    try:
-        data = request.json
-        votes = data["votes"]
-        count_votes(votes)
-
-        return jsonify({"message": "Vote Counting finished"}), 200
-
-    except Exception as e:
-        print(e)
-        return jsonify({"message": str(e)}), 500
 
 
 # Sample route to check if API is running
