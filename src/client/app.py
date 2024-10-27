@@ -156,7 +156,7 @@ def vote():
                 if response_vote_pool.status_code == 200:
                     # If the vote is added successfully, return the receipt
                     receipt = response.json()["receipt"]
-                            # Update the voted status of the user in the database
+                    # Update the voted status of the user in the database
                     set_voted_in_db(
                         st.session_state.loggedInUser["username"], st.session_state.connection
                     )
@@ -183,6 +183,7 @@ def vote():
         else:
             st.error("Error signing the vote")
             return
+
 
 
 
