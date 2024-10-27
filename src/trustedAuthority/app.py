@@ -4,7 +4,7 @@ from db.connection import get_db_connection
 from db.voters import get_user_from_db, get_user_from_id_from_db
 from db.candidates import get_candidate_from_db_by_id
 from db.votes import set_votes_in_db
-from trustedAuthority.trustedAuthority_votePool import set_vote_counted_in_db
+from trustedAuthority.trustedAuthority_votePool import set_vote_counted_in_db,get_vote_pool
 from flask import request, jsonify
 from flask import request, jsonify, current_app
 import jwt
@@ -13,7 +13,8 @@ import jwt
 connection = get_db_connection()
 
 @app.route("/vote_count", methods=["POST"])
-def count_votes(votes):
+def count_votes():
+    votes = get_vote_pool(connection)
     for vote in votes:
         if vote["counted"]:
             continue
