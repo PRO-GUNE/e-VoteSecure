@@ -1042,7 +1042,7 @@ def decrypt_signature(s1):
     return s
 ```
 
-- `trustedAuthority_votePool.py`: Contains the functions for interacting with the `vote_pool` table in the database.
+- `trustedAuthority_votePool.py`: Contains the functions for interacting with the `vote_pool` table in the trusted authority database.
 
 ```python
 def add_to_vote_pool(signed_vote, connection):
@@ -1099,6 +1099,7 @@ if st.button("Verify"):
     else:
         st.error("Verification Failed")
 ```
+- `trustedAuthority_votePool.py`: Contains the functions for interacting with the `vote_pool` table in the trusted authority database.
 
 ### Vote Pool Server
 
@@ -1408,6 +1409,13 @@ def get_target_db_connection():
     )
     return connection
 ```
+- `Database schema` for the vote pool. Unique id is made by combining a nonce and a time stamp.
+```python
+ CREATE TABLE vote_pool (
+        unique_id VARCHAR(52) PRIMARY KEY,
+        signed_vote TEXT
+    );
+```
 
 ### Utils
 
@@ -1619,3 +1627,5 @@ The architecture diagram below illustrates the main components and data flow of 
 - **Vote Verification**: Voters can verify their votes by interacting with the Trusted Authority Server, which checks the vote receipt against stored records.
 
 This structured setup ensures a robust, privacy-preserving, and secure online voting process.
+
+### Architecure Diagram of MVP
