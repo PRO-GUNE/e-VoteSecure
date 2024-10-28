@@ -1574,7 +1574,7 @@ The frontend of the application is built using Streamlit, a Python library for b
 
 ![Login Page](./client/login.png)
 ![Vote Page](./client/vote.png)
-![Register Page](image.png)
+![Register Page](./client/register.png)
 
 #### Admin Application
 - The admin application allows the admin to migrate votes, request vote counting, and view the results.
