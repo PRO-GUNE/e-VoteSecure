@@ -37,16 +37,6 @@ def authenticate_JWT(token):
         return False
 
 
-# def authenticate_JWT(token):
-#     try:
-#         decoded_token = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
-#         return True  # or return the decoded token if you need it
-#     except jwt.ExpiredSignatureError:
-#         return False  # Token has expired
-#     except jwt.InvalidTokenError:
-#         return False  # Token is invalid
-
-
 def data_migrate():
 
     try:

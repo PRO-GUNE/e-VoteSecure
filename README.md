@@ -23,7 +23,7 @@ python -m streamlit run client/app.py
 - [x] Implement the universal verifiable e-voting system (global counter)
 - [x] Implement the backend to simulate trusted authority for blindly signing the votes
 - [x] Implement OTP based authentication for voters for voter registration
-- [ ] Identify vulnerabilities and fix them
-- [ ] Identify performance bottlenecks and fix them
-- [ ] Remove Debug errors and warnings
-- [ ] Add receipt
+- [x] Identify vulnerabilities and fix them
+- [x] Identify performance bottlenecks and fix them
+- [x] Remove Debug errors and warnings
+- [x] Add receipt

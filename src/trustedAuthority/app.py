@@ -24,6 +24,10 @@ def count_votes():
     try:
         reset_votes_in_db(connection)
         votes = get_vote_pool(connection)
+
+        if not votes:
+            return jsonify({"message": "No votes to count"})
+
         for vote in votes:
             if vote["counted"]:
                 continue

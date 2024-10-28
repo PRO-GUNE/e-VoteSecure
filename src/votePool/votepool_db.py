@@ -9,9 +9,8 @@ def add_to_vote_pool(unique_id, signed_vote, connection):
         return True
     except Exception as e:
         print(f"Error: {e}")
-        connection.rollback() 
+        connection.rollback()
         return False
-
 
 
 def get_vote_pool(connection):
@@ -24,17 +23,8 @@ def get_vote_pool(connection):
 def get_vote_count(connection):
     cursor = connection.cursor()
     cursor.execute("SELECT COUNT(*) FROM vote_pool")
-    
+
     result = cursor.fetchone()  # Fetch one row
 
-    count = result['COUNT(*)']
+    count = result["COUNT(*)"]
     return count
-
-
-
-# CREATE TABLE vote_pool (
-#     unique_id VARCHAR(52) PRIMARY KEY,
-#     signed_vote TEXT
-
-
-
