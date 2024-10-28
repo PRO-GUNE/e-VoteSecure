@@ -1628,3 +1628,26 @@ The architecture diagram below illustrates the main components and data flow of 
 
 This structured setup ensures a robust, privacy-preserving, and secure online voting process.
 
+
+## Future Work
+
+1. **Enhancing the User Interface and Experience**:
+   - Improve the aestetic appeal and usability of the application.
+   - Provide localization options, load content in low bandwidth connections, and make it compatible with old-generation devices.
+
+2. **Scalability and Performance Optimization**:
+   - Push additional optimizations into the backend with an aim of achieving up to millions of users and still observe no loss in performance.
+   - Extend the horizontal scaling, load balancing and faster mechanism for blockchain transactions.
+
+3. **Blockchain and Vote Security**:
+   - Implement blockchain system for store votes securely. 
+   - Enhance blockchain efficiency for faster, secure vote submission and post-election audits.
+
+4. **Robust Post-Election Auditing**:
+   - Create a better auditing system and provide independent auditors with a better interface to assess the elections’ credibility. 
+
+5. **Enhanced Integration with National Systems**:
+   - Increase the connectivity with the National Identity Database as a means of confirming voters’ identity as well as enhance the telecommunication network of delivering OTPs during rush voting time. 
+   - Establish effective backup options that will effectively provide for the time when there will be a disruption of services.
+
+
