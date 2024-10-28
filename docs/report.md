@@ -1628,4 +1628,3 @@ The architecture diagram below illustrates the main components and data flow of 
 
 This structured setup ensures a robust, privacy-preserving, and secure online voting process.
 
-### Architecure Diagram of MVP
