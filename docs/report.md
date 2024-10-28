@@ -1579,3 +1579,43 @@ The frontend of the application is built using Streamlit, a Python library for b
 - The verify application allows users to verify their vote using the receipt.
 
 ![Verify Page](./verify/verify.png)
+
+# e-VoteSecure - Architecture Diagram
+
+The architecture diagram below illustrates the main components and data flow of the **e-VoteSecure** online voting system. Each component is designed to provide a secure, private, and transparent voting process, leveraging cryptography, two-factor authentication, and structured data flow to maintain voter anonymity and ensure data integrity.
+
+![e-VoteSecure Architecture Diagram](./architecture_diagram.png)
+
+## Diagram Description
+
+### Components
+
+1. **Two Factor Authentication Unit (Email/OTP Based)**
+   - This unit sends OTPs (One-Time Passwords) to users during registration and login to enhance security. It verifies voter identity, preventing unauthorized access to the system.
+
+2. **Client Application (Voter App - Streamlit)**
+   - The Client Application provides the main user interface where voters can register, log in, cast votes, and verify their votes. It communicates with the Two Factor Authentication Unit for OTPs, and with the Trusted Authority for vote signing.
+
+3. **Vote Pool Server (Temporary Vote Storage)**
+   - The Vote Pool Server temporarily stores signed votes from the Client Application. It serves as an intermediary between the Client Application and the Trusted Authority. Votes are stored here until they are migrated to the Trusted Authority for counting.
+
+4. **Trusted Authority Server (Vote Signing, Counting, Verification)**
+   - The Trusted Authority Server handles cryptographic operations, including signing blinded votes, verifying vote receipts, and tallying final vote counts. It communicates directly with the Primary Database to update results and store counted votes.
+
+5. **Admin Application (Admin Functions)**
+   - This application provides the election administrator with tools to manage the voting process, including migrating votes from the Vote Pool Server, initiating vote counting, and viewing final results. It also facilitates data flow between the Trusted Authority Server and databases.
+
+6. **Primary Database (User, Candidate, Vote Table)**
+   - The Primary Database securely stores registered user information, candidate data, and finalized votes. It receives updates from the Trusted Authority during vote tallying and is used to track voter registration and voting status.
+
+7. **Secondary Database (Vote Pool Backup)**
+   - The Secondary Database holds the Vote Pool’s temporary vote data and undergoes regular backups for resilience. It serves as a backup in case of data loss before final migration to the Primary Database.
+
+### Data Flow
+
+- **Authentication and Voting**: Voters use the Client Application to register and log in, leveraging the Two Factor Authentication Unit for OTP-based security.
+- **Vote Submission**: The Client Application sends blinded votes to the Trusted Authority for signing. After receiving the signed vote, it sends it to the Vote Pool Server.
+- **Vote Migration and Counting**: The Admin Application triggers the migration of votes from the Vote Pool Server to the Trusted Authority for final tallying. The Trusted Authority updates the results in the Primary Database.
+- **Vote Verification**: Voters can verify their votes by interacting with the Trusted Authority Server, which checks the vote receipt against stored records.
+
+This structured setup ensures a robust, privacy-preserving, and secure online voting process.
